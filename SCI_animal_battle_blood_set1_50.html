@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Battle! สัตว์เลือดอุ่น vs เลือดเย็น — Kru Pai Classroom (สุ่ม 50 ข้อ)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* ธีม แดง–น้ำเงิน อมน้ำตาล (อุ่น/เย็น) */
+    --bg:#f7fbff;
+    --fg:#1d2430;
+    --brand:#1f4e8c;         /* น้ำเงินเข้มสำหรับชื่อโจทย์ */
+    --warm:#e43d3d;          /* แดง (เลือดอุ่น) */
+    --warm-2:#ff7a57;
+    --cold:#2b6dcf;          /* น้ำเงิน (เลือดเย็น) */
+    --cold-2:#5aa3ff;
+    --card:#ffffff;
+    --muted:#9aa6b2;
+    --good:#0f9a3a;          /* ถูก */
+    --bad:#c81c1c;           /* ผิด */
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:linear-gradient(180deg,#eef6ff 0%, var(--bg) 50%, #ffffff 100%);font-family:'Noto Sans Thai',system-ui,sans-serif;color:var(--fg);display:flex;min-height:100vh;align-items:center;justify-content:center}
+  .container{width:min(1000px,96vw);padding:20px}
+  .card{background:var(--card);border-radius:22px;padding:22px;box-shadow:0 10px 30px rgba(0,0,0,.08)}
+  .grid{display:grid;gap:16px}
+  .center{text-align:center}
+  .hidden{display:none !important}
+
+  /* โลโก้ Kru Pai Classroom ทุกหน้า */
+  .miniBrand{display:flex;align-items:center;gap:10px;justify-content:center;font-weight:800;color:#21354f;margin:-6px 0 10px}
+  .miniBrand .dot{width:10px;height:10px;background:linear-gradient(135deg,#ffcf91,#c78446);border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+
+  /* ปุ่ม */
+  .btn{border:0;cursor:pointer;padding:14px 18px;border-radius:999px;font-weight:800;font-size:18px;letter-spacing:.2px;transition:.2s transform,.2s box-shadow,.2s filter}
+  .btn:active{transform:translateY(1px)}
+  .btn-lg{padding:18px 28px;font-size:22px}
+  .btn-warm{background:linear-gradient(135deg,var(--warm-2),var(--warm));color:#fff;box-shadow:0 8px 18px rgba(228,61,61,.35)}
+  .btn-cold{background:linear-gradient(135deg,var(--cold-2),var(--cold));color:#fff;box-shadow:0 8px 18px rgba(43,109,207,.35)}
+  .btn-outline{background:transparent;color:var(--fg);border:2px dashed var(--muted)}
+
+  /* เกม */
+  .question{font-size:clamp(28px,6vw,52px);font-weight:800;color:var(--brand);margin:12px 0 8px}
+  .timer{display:flex;align-items:center;gap:10px;justify-content:center;font-weight:800}
+  .bar{width:100%;height:12px;background:#e6ecf6;border-radius:999px;overflow:hidden}
+  .bar>div{height:100%;width:100%;background:linear-gradient(90deg,#cfe1ff,#a9c8ff);transition:width .2s linear}
+  .choices{display:grid;grid-template-columns:1fr;gap:14px;margin-top:10px}
+  @media(min-width:560px){.choices{grid-template-columns:1fr 1fr}}
+  .choice{border:none;border-radius:18px;padding:16px;font-size:20px;font-weight:800;cursor:pointer}
+  .choice.warm{background:linear-gradient(135deg,var(--warm-2),var(--warm));color:#fff;box-shadow:0 10px 20px rgba(228,61,61,.25)}
+  .choice.cold{background:linear-gradient(135deg,var(--cold-2),var(--cold));color:#fff;box-shadow:0 10px 20px rgba(43,109,207,.25)}
+  .status{min-height:56px;font-weight:800;text-align:center;margin-top:10px;font-size:clamp(22px,5vw,32px)}
+  .status-bubble{display:inline-block;padding:10px 16px;border-radius:999px;background:#fff;border:3px solid #e9f0ff;box-shadow:0 8px 16px rgba(0,0,0,.08)}
+  .good{color:var(--good);text-shadow:0 2px 0 rgba(255,255,255,.6)}
+  .bad{color:var(--bad);text-shadow:0 2px 0 rgba(255,255,255,.6)}
+
+  /* หน้าทบทวนตัวอย่าง */
+  .two-col{display:grid;grid-template-columns:1fr;gap:16px}
+  @media(min-width:720px){.two-col{grid-template-columns:1fr 1fr}}
+  .list-card{background:#fff;border:2px solid #dfe8f6;border-radius:18px;padding:14px 16px}
+  .list-card h3{margin:6px 0 8px;font-weight:800;color:#264b86}
+  .animal-list{display:flex;flex-wrap:wrap;gap:10px}
+  .tag{background:#f3f7ff;border:1px solid #d7e6ff;padding:8px 12px;border-radius:16px;font-weight:700}
+
+  /* หน้าสรุปคะแนน */
+  .score-big{font-size:clamp(36px,8vw,72px);font-weight:800;margin:6px 0 12px}
+</style>
+</head>
+<body>
+  <div class="container grid">
+
+    <!-- หน้า 1: ปก + วิธีเล่น -->
+    <section id="screen-home" class="card">
+      <div class="miniBrand"><span class="dot"></span> Kru Pai Classroom</div>
+      <h1 class="center">Battle! สัตว์เลือดอุ่น vs เลือดเย็น</h1>
+      <div class="center" style="margin:8px 0 14px;">
+        <span style="display:inline-block;background:#ffe0e0;color:#7c1c1c;padding:6px 14px;border-radius:999px;font-weight:800">สุ่ม 50 ข้อ · จับเวลา 7 วินาที/ข้อ · ป.3–ป.4</span>
+      </div>
+      <div class="grid">
+        <div class="card" style="background:#f9fcff">
+          <h2>วิธีเล่น (อ่านก่อนเริ่ม)</h2>
+          <p style="font-size:18px;line-height:1.7"><strong>จงบอกว่าสัตว์ต่อไปนี้</strong> เป็น <strong>สัตว์เลือดอุ่น</strong> หรือ <strong>สัตว์เลือดเย็น</strong> — 
+            <mark style="background:#fff3c4;padding:0 6px;border-radius:6px;">จับเวลา 7 วินาทีต่อข้อ</mark> 
+            หากพร้อมแล้ว <strong>กดปุ่ม Start</strong> เพื่อเริ่มเล่นได้เลย!
+          </p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center" aria-hidden="true">
+            <span class="tag">ชื่อสัตว์ = น้ำเงินเข้ม</span>
+            <span class="tag">เลือดอุ่น = ปุ่มสีแดง</span>
+            <span class="tag">เลือดเย็น = ปุ่มสีน้ำเงิน</span>
+          </div>
+        </div>
+        <div class="grid" style="grid-template-columns:1fr;gap:12px">
+          <input id="playerName" class="card" placeholder="พิมพ์ชื่อเล่นของหนู…" style="padding:14px 16px;border:2px dashed #cfe0ff;border-radius:16px;font-size:18px" />
+          <div class="center" style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
+            <button id="btnStart" class="btn btn-lg btn-warm" style="font-size:24px;padding:18px 34px;box-shadow:0 12px 26px rgba(228,61,61,.35)">🚀 START เริ่ม Battle 50 ข้อ!</button>
+            <button id="btnWarmEx" class="btn btn-lg btn-outline">🔥 ตัวอย่างสัตว์เลือดอุ่น</button>
+            <button id="btnColdEx" class="btn btn-lg btn-outline">❄️ ตัวอย่างสัตว์เลือดเย็น</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- หน้า 2: ตัวอย่างสัตว์เลือดอุ่น (50) -->
+    <section id="screen-exWarm" class="card hidden">
+      <div class="miniBrand"><span class="dot"></span> Kru Pai Classroom</div>
+      <h2 class="center">🔥 ตัวอย่าง: สัตว์เลือดอุ่น (นก + สัตว์เลี้ยงลูกด้วยนม) — 50 ชนิด</h2>
+      <div class="two-col">
+        <div class="list-card">
+          <h3>สัตว์เลี้ยงลูกด้วยนม</h3>
+          <div id="warmList1" class="animal-list"></div>
+        </div>
+        <div class="list-card">
+          <h3>นก</h3>
+          <div id="warmList2" class="animal-list"></div>
+        </div>
+      </div>
+      <div class="center" style="margin-top:14px">
+        <button id="toColdEx" class="btn">➡ ไปดูสัตว์เลือดเย็น</button>
+        <button id="startFromWarm" class="btn btn-warm">🚀 เริ่ม Battle 50 ข้อ</button>
+        <button id="backWarm" class="btn">🏠 กลับหน้าแรก</button>
+      </div>
+    </section>
+
+    <!-- หน้า 3: ตัวอย่างสัตว์เลือดเย็น (50) -->
+    <section id="screen-exCold" class="card hidden">
+      <div class="miniBrand"><span class="dot"></span> Kru Pai Classroom</div>
+      <h2 class="center">❄️ ตัวอย่าง: สัตว์เลือดเย็น (ปลา/สะเทินน้ำสะเทินบก/เลื้อยคลาน/แมลง) — 50 ชนิด</h2>
+      <div class="two-col">
+        <div class="list-card">
+          <h3>ปลา · ครึ่งบกครึ่งน้ำ · เลื้อยคลาน</h3>
+          <div id="coldList1" class="animal-list"></div>
+        </div>
+        <div class="list-card">
+          <h3>แมลงและญาติ · ทะเลไม่มีกระดูกสันหลัง</h3>
+          <div id="coldList2" class="animal-list"></div>
+        </div>
+      </div>
+      <div class="center" style="margin-top:14px">
+        <button id="toWarmEx" class="btn">⬅ ย้อนกลับ: สัตว์เลือดอุ่น</button>
+        <button id="startFromCold" class="btn btn-cold">🚀 เริ่ม Battle 50 ข้อ</button>
+        <button id="backCold" class="btn">🏠 กลับหน้าแรก</button>
+      </div>
+    </section>
+
+    <!-- หน้า 4: เกม 50 ข้อ -->
+    <section id="screen-game" class="card hidden">
+      <div class="miniBrand"><span class="dot"></span> Kru Pai Classroom</div>
+      <div class="grid">
+        <div class="timer">
+          <div class="bar" aria-label="ตัวจับเวลา"><div id="barFill"></div></div>
+          <div><strong id="timeText">7</strong>s</div>
+        </div>
+        <div class="center">
+          <div id="qCount" style="font-weight:800;color:#5a6f8f">ข้อ 1/50</div>
+          <div id="question" class="question">—</div>
+        </div>
+        <div class="choices">
+          <button class="choice warm" data-pick="warm">🔥 เลือดอุ่น</button>
+          <button class="choice cold" data-pick="cold">❄️ เลือดเย็น</button>
+        </div>
+        <div id="status" class="status status-bubble"></div>
+      </div>
+    </section>
+
+    <!-- หน้า 5: สรุปคะแนน -->
+    <section id="screen-result" class="card hidden center">
+      <div class="miniBrand"><span class="dot"></span> Kru Pai Classroom</div>
+      <h2>สรุปคะแนนของ <span id="playerLabel">นักเรียน</span></h2>
+      <div id="finalScore" class="score-big">0 / 50</div>
+      <p id="finalMsg" style="font-size:18px;margin-top:10px">—</p>
+      <div style="margin-top:14px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <button id="btnPlayAgain" class="btn btn-warm">🔁 เล่นอีกครั้ง</button>
+        <button id="btnHome" class="btn">🏠 กลับหน้าแรก (ลงชื่อเล่น)</button>
+      </div>
+    </section>
+
+  </div>
+
+<script>
+// ======================= ตัวอย่างสัตว์ (50 + 50) =======================
+// เลือดอุ่น = นก + สัตว์เลี้ยงลูกด้วยนม
+const WARM_MAMMALS = [
+  "คน","แมว","สุนัข","วัว","ควาย","ม้า","หมู","แกะ","แพะ","ช้าง",
+  "ลิง","กอริลลา","อุรังอุตัง","ชะนี","กระต่าย","กระรอก","แพนด้า","จิ้งจอก","หมาป่า","แรคคูน",
+  "ยีราฟ","แรด","ฮิปโปโปเตมัส","อูฐ","ลามา",
+  "เสือ","สิงโต","เสือโคร่ง","เสือดาว","เสือชีตาห์",
+  "แมวน้ำ","สิงโตทะเล","วาฬ","ปลาโลมา","พะยูน"
+];
+const WARM_BIRDS = [
+  "นกกระจอก","นกพิราบ","นกแก้ว","ไก่","ไก่งวง","เป็ด","ห่าน","อินทรี","เหยี่ยว","นกฮูก",
+  "นกเพนกวิน","นกนางนวล","นกนางแอ่น","นกกระทา","นกกระเรียน",
+  "กระเต็น","กางเขนบ้าน","นกกะเต็นเล็ก","นกเอี้ยง","นกเงือก"
+];
+// รวมให้ครบ 50 ตัวอย่าง (35 สัตว์เลี้ยงลูกด้วยนม + 15 นก = 50)
+while(WARM_MAMMALS.length < 35){ WARM_MAMMALS.push("สัตว์เลี้ยงลูกด้วยนมเพิ่มเติม"+WARM_MAMMALS.length); }
+while(WARM_BIRDS.length < 15){ WARM_BIRDS.push("นกเพิ่มเติม"+WARM_BIRDS.length); }
+const WARM = [...WARM_MAMMALS.slice(0,35), ...WARM_BIRDS.slice(0,15)];
+
+// เลือดเย็น = ปลา + ครึ่งบกครึ่งน้ำ + เลื้อยคลาน + แมลง/ไม่มีกระดูกสันหลัง
+const COLD_FAR = [ // Fish/Amphibian/Reptile 30 ตัว
+  "ปลาทอง","ปลานิล","ปลากะพง","ปลาคาร์พ","ฉลาม","ปลากระเบน","ปลาซาร์ดีน","ปลากะตัก","ปลาดุก","ปลาช่อน",
+  "กบ","คางคก","ซาลามานเดอร์","แอกโซลอเติล","นิวท์",
+  "งู","งูเห่า","งูเหลือม","จระเข้","เต่า",
+  "ตะพาบน้ำ","ตุ๊กแก","กิ้งก่า","อิกัวนา","ตัวเงินตัวทอง",
+  "กิ้งก่าคาเมเลียน","งูอนาคอนดา","งูเขียว","เต่าทะเล","เต่านา"
+];
+const COLD_INV = [ // Invertebrates 20 ตัว
+  "แมลงปอ","ผีเสื้อ","มด","แมลงวัน","ยุง","แมงมุม","ตะขาบ","กิ้งกือ","ปลิง","ไส้เดือน",
+  "หอยทาก","หอย","หอยแมลงภู่","ปู","กุ้ง","ปลาหมึก","หมึกกระดอง","ปลาหมึกยักษ์","แมงกะพรุน","ปะการัง"
+];
+const COLD = [...COLD_FAR.slice(0,30), ...COLD_INV.slice(0,20)]; // รวม 50
+
+// ตรวจความยาว (เพื่อความชัวร์ในการสุ่ม 50)
+// console.log(WARM.length, COLD.length);
+
+const ALL = [
+  ...WARM.map(n=>({name:n, ans:'warm'})),
+  ...COLD.map(n=>({name:n, ans:'cold'}))
+];
+
+// ====== DOM ======
+const screens={home:gid('screen-home'), exWarm:gid('screen-exWarm'), exCold:gid('screen-exCold'), game:gid('screen-game'), result:gid('screen-result')};
+const warmList1=gid('warmList1'), warmList2=gid('warmList2');
+const coldList1=gid('coldList1'), coldList2=gid('coldList2');
+const btnStart=gid('btnStart');
+const btnWarmEx=gid('btnWarmEx'), btnColdEx=gid('btnColdEx');
+const toColdEx=gid('toColdEx'), toWarmEx=gid('toWarmEx');
+const startFromWarm=gid('startFromWarm'), startFromCold=gid('startFromCold');
+const backWarm=gid('backWarm'), backCold=gid('backCold');
+const playerNameInput=gid('playerName');
+const qCount=gid('qCount'), question=gid('question'), statusBox=gid('status');
+const timeText=gid('timeText'), barFill=gid('barFill');
+const choiceButtons=[...document.querySelectorAll('.choice')];
+const playerLabel=gid('playerLabel'), finalScore=gid('finalScore'), finalMsg=gid('finalMsg');
+const btnPlayAgain=gid('btnPlayAgain'), btnHome=gid('btnHome');
+function gid(id){return document.getElementById(id)}
+
+// เรนเดอร์รายการตัวอย่าง 50+50 แบบสองคอลัมน์
+function renderExamples(){
+  const wm = WARM_MAMMALS.slice(0,35).map(x=>`<span class="tag">${x}</span>`).join('');
+  const wb = WARM_BIRDS.slice(0,15).map(x=>`<span class="tag">${x}</span>`).join('');
+  warmList1.innerHTML=wm; warmList2.innerHTML=wb;
+
+  const c1 = COLD_FAR.slice(0,30).map(x=>`<span class="tag">${x}</span>`).join('');
+  const c2 = COLD_INV.slice(0,20).map(x=>`<span class="tag">${x}</span>`).join('');
+  coldList1.innerHTML=c1; coldList2.innerHTML=c2;
+}
+renderExamples();
+
+// สลับหน้า
+function show(which){Object.values(screens).forEach(s=>s.classList.add('hidden'));screens[which].classList.remove('hidden')}
+btnStart.addEventListener('click',()=>startGame());
+btnWarmEx.addEventListener('click',()=>show('exWarm'));
+btnColdEx.addEventListener('click',()=>show('exCold'));
+backWarm.addEventListener('click',()=>show('home'));
+backCold.addEventListener('click',()=>show('home'));
+startFromWarm.addEventListener('click',()=>startGame());
+startFromCold.addEventListener('click',()=>startGame());
+toColdEx.addEventListener('click',()=>show('exCold'));
+toWarmEx.addEventListener('click',()=>show('exWarm'));
+
+// เกมหลัก
+let deck=[], index=0, score=0, timer=null; const LIMIT=7; // วินาที/ข้อ
+function pick50(){
+  const a=[...ALL];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}
+  return a.slice(0,50);
+}
+function startGame(){deck=pick50();index=0;score=0;statusBox.textContent='';show('game');nextQuestion();}
+function nextQuestion(){
+  if(index>=deck.length) return endGame();
+  const item=deck[index];
+  qCount.textContent = `ข้อ ${index+1}/50`;
+  question.textContent = item.name; // น้ำเงินเข้มจาก CSS
+  statusBox.textContent=''; statusBox.className='status status-bubble';
+  choiceButtons.forEach(b=>{ b.disabled=false; b.style.opacity=1; });
+  startTimer(LIMIT, ()=>{ flash(false); setTimeout(()=>{ index++; nextQuestion(); }, 500); });
+}
+function startTimer(seconds,onTimeout){
+  clearInterval(timer);
+  let remain=seconds; const total=seconds;
+  timeText.textContent=remain; barFill.style.width='100%';
+  timer=setInterval(()=>{
+    remain -= 0.1;
+    if(remain<=0){ clearInterval(timer); timeText.textContent=0; barFill.style.width='0%'; onTimeout && onTimeout(); }
+    else { timeText.textContent=Math.ceil(remain); barFill.style.width = `${(remain/total)*100}%`; }
+  },100);
+}
+choiceButtons.forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    if(index>=deck.length) return;
+    const pick=btn.getAttribute('data-pick');
+    choiceButtons.forEach(b=>{ b.disabled=true; b.style.opacity=.7; });
+    clearInterval(timer);
+    const ok = (pick===deck[index].ans); if(ok) score++;
+    flash(ok);
+    setTimeout(()=>{ index++; nextQuestion(); }, 500);
+  })
+});
+function flash(ok){
+  statusBox.textContent = ok ? 'ถูกต้องจ้า! เก่งมาก 🌟' : 'พลาดนิดเดียว ลองข้อถัดไปนะ ❄️';
+  statusBox.className = 'status status-bubble ' + (ok ? 'good' : 'bad');
+}
+function endGame(){
+  show('result');
+  const name=(playerNameInput.value||'นักเรียน').trim();
+  playerLabel.textContent=name;
+  finalScore.textContent=`${score} / 50`;
+  finalMsg.textContent = score>=35 ? 'สุดยอด! ได้ 35 ข้อขึ้นไป ถือว่าผ่าน Battle เลือดอุ่น/เย็น 🎉' : 'สู้ๆ นะ ลองใหม่อีกครั้งให้ได้ 35 ข้อขึ้นไป ✨';
+}
+btnPlayAgain.addEventListener('click',()=>startGame());
+btnHome.addEventListener('click',()=>show('home'));
+</script>
+</body>
+</html>
